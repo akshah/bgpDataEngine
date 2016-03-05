@@ -3,7 +3,7 @@ Created on Oct 9, 2015
 
 @author: akshah
 '''
-from dataEngine.bgpDataEngine import bgpDataEngine
+from bgpDataEngine.bgpDataEngine import bgpDataEngine
 from customUtilities.helperFunctions import *
 
 
