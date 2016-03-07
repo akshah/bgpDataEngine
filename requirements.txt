@@ -1,2 +1,2 @@
 pycurl
-MySQLdb
+mysqlclient
