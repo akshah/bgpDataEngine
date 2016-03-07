@@ -1,2 +1,2 @@
 pycurl
-pymysql
+MySQLdb
