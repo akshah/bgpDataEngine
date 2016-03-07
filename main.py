@@ -8,7 +8,7 @@ from customUtilities.helperFunctions import *
 
 
 if __name__ == '__main__':
-    start_time,_=current_time()
+    start_time,_=currentTime()
     
     bde=bgpDataEngine()
     
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     
     
     #bde.downloadFile()
-    bde.getRange('updates','20140701','20140705',collectors=['route-views.jinx']) 
+    #bde.getRange('updates','20140701','20140705',collectors=['route-views.jinx'])
     
     #bde.load(['/raid1/akshah/mrtFiles/route-views.kixp/2015/11/01/route-views.kixp.updates.20151101.0000.bz2','/raid1/akshah/mrtFiles/route-views.kixp/2015/11/01/route-views.kixp.updates.20151101.1200.bz2'])
     #bde.load2DB()
@@ -43,5 +43,5 @@ if __name__ == '__main__':
     #        break
     #    print(val)
     
-    end_time,_=current_time()
+    end_time,_=currentTime()
     print('Finished processing in '+str(int((end_time-start_time)/60))+' minutes and '+str(int((end_time-start_time)%60))+' seconds.')
