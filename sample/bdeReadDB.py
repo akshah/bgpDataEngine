@@ -22,7 +22,7 @@ if __name__ == '__main__':
         val=bde.messageQueue.get()
         if not val:
             break
-        #print(val)
+        print(val)
 
     end_time,_=currentTime()
     print('Finished processing in '+str(int((end_time-start_time)/60))+' minutes and '+str(int((end_time-start_time)%60))+' seconds.')
