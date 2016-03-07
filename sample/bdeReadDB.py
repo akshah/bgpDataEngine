@@ -10,6 +10,8 @@ from customUtilities.helperFunctions import *
 if __name__ == '__main__':
     start_time,_=currentTime()
 
+    bde=bgpDataEngine()
+
     #Getting data from DB
     day='20140705'
     peer='196.223.14.10'
