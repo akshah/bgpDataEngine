@@ -10,7 +10,7 @@ from customUtilities.helperFunctions import *
 if __name__ == '__main__':
     start_time,_=currentTime()
 
-    bde=bgpDataEngine()
+    bde=bgpDataEngine(configfile='conf/custom.conf')
 
     #Getting data from DB
     day='20140705'

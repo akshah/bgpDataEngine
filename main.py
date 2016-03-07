@@ -10,7 +10,7 @@ from customUtilities.helperFunctions import *
 if __name__ == '__main__':
     start_time,_=currentTime()
     
-    bde=bgpDataEngine(configfile='conf/custom.conf')
+    bde=bgpDataEngine()
     
     #This is sample initialization test. See more in sample.
 
