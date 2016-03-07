@@ -1,4 +1,4 @@
-init:
+all:
 	pip3.4 install --user -r requirements.txt
 
 test:
