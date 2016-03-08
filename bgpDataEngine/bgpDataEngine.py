@@ -127,6 +127,8 @@ class bgpDataEngine(object):
                 self.queueRV.task_done()
                 continue
 
+            print(item)
+
             tryCounter = int(tryCounter)
             if tryCounter == 3:
                 # This URL was tried 3 times before, I will skip it.
@@ -388,7 +390,7 @@ class bgpDataEngine(object):
                             fileNames.append(str(
                                 tryCounter) + '|' + collector + '|' + year + '|' + month + '|' + day + '|' + url + '/' +
                                              vals2[0])
-                #os.remove(indexFile)
+                os.remove(indexFile)
 
                 for fileURL in fileNames:
                     totalFileCounter += 1
