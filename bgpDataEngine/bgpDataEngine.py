@@ -41,9 +41,7 @@ class bgpDataEngine(object):
         #Load config file
         self.config = configparser.ConfigParser()
         try:
-            exit(1)
-
-        self.config.sections()
+            self.config.sections()
             self.config.read(configfile)
         except:
             print('Missing config: '+configfile)
