@@ -254,7 +254,7 @@ class bgpDataEngine(object):
             year = dr[:4]
             month = dr[4:6]
             day = dr[6:8]
-            for collector in self.collectors:
+            for collector in self.rvcollectors:
                 url = "http://archive.routeviews.org/"
                 indexFile = collector + '_' + dr + 'index.download'
                 fileNames = []
@@ -362,7 +362,7 @@ class bgpDataEngine(object):
             year = dr[:4]
             month = dr[4:6]
             day = dr[6:8]
-            for collector in self.collectors:
+            for collector in self.ripecollectors:
                 url = "http://data.ris.ripe.net/"
                 indexFile = collector + '_' + dr + 'index.download'
                 fileNames = []
