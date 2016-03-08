@@ -367,7 +367,7 @@ class bgpDataEngine(object):
                 indexFile = collector + '_' + dr + 'index.download'
                 fileNames = []
                 try:
-                    url = url + collector + year + '.' + month + '/'
+                    url = url + collector + '/' + year + '.' + month + '/'
                     f = urlopen(url)
                     # print("Downloading: " + url)
 
