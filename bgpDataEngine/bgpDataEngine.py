@@ -41,12 +41,12 @@ class bgpDataEngine(object):
         #Load config file
         self.config = configparser.ConfigParser()
         try:
+            exit(1)
+
+        self.config.sections()
             self.config.read(configfile)
         except:
             print('Missing config: '+configfile)
-            exit(1)
-            
-        self.config.sections()
         
         self.logger=logger(self.config['DEFAULTDIRS']['logFile'])
         self.logger.info("***Initializing BGP data engine.***")
@@ -427,7 +427,7 @@ class bgpDataEngine(object):
         del threadPool[:]  
         self.logger.info('Range '+start+' to '+end+' files fetched.')
     
-    def getMonth(self,datatype,year,month):
+    def getMonth(self,datatype,year,month,load2db=True):
         if(len(month)!=2 or len(year)!=4):
             self.logger.error('Incorrect format. Use YYYY MM.')
             return 1
@@ -435,7 +435,7 @@ class bgpDataEngine(object):
         dayend=self._lastDayOfMonth(year,month)
         start=year+month+daystart+'000000'
         end=year+month+dayend+'235959'
-        self.getRange(datatype,start, end)
+        self.getRange(datatype,start, end,load2db=load2db)
        
     def _checkIfTableExists(self,table):
         tryCounter=0
