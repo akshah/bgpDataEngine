@@ -387,7 +387,7 @@ class bgpDataEngine(object):
                             fileNames.append(str(
                                 tryCounter) + '|' + collector + '|' + year + '|' + month + '|' + day + '|' + url + '/' +
                                              vals2[0])
-                os.remove(indexFile)
+                #os.remove(indexFile)
 
                 for fileURL in fileNames:
                     totalFileCounter += 1
