@@ -463,7 +463,8 @@ class bgpDataEngine(object):
             collector, ldatatype, start, end = item.split('|')
             self.logger.info('Collector: ' + collector + ' | Start: ' + start + ' | End: ' + end)
             # print('Collector: '+collector+' | Start: '+start+' | End: '+end)
-            bgpFile = self.dirpath + start + '_' + end + '_' + collector + '_' + ldatatype + '.mrt'
+            os.makedirs(os.path.dirname(self.dirpath + '/' + collector), exist_ok=True)
+            bgpFile = self.dirpath + '/' + collector + '/' + start + '_' + end + '_' + '_' + ldatatype + '.mrt'
             self.filesDownloaded.append(bgpFile)
             with open(bgpFile, 'wb') as f:
                 try:
