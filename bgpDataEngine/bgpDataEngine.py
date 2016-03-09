@@ -533,25 +533,26 @@ class bgpDataEngine(object):
             t.start()
             threadPool.append(t)
 
-        if (sday == eday):
-            self.rangeQueue.put(collectors + '|' + ldatatype + '|' + start + '|' + end)
-            #print(ldatatype + '|' + start + '|' + end)
-        else:
-            currStart = start
-            for dayiter in range(int(sday), int(eday) + 1):
-                TmpDay = str(dayiter)
-                TmpDayNext = str(dayiter + 1)
-                if len(TmpDay) < 2:
-                    TmpDay = '0' + TmpDay
-                if len(TmpDayNext) < 2:
-                    TmpDayNext = '0' + TmpDayNext
-                if TmpDay == eday:
-                    currEnd = eyear + emonth + TmpDay + end[8:]
-                else:
-                    currEnd = eyear + emonth + TmpDay + '235959'
-                self.rangeQueue.put(collectors + '|' + ldatatype + '|' + currStart + '|' + currEnd)
-                #print(ldatatype + '|' + currStart + '|' + currEnd)
-                currStart = eyear + emonth + TmpDayNext + '000000'
+        for collector in collectors:
+            if (sday == eday):
+                self.rangeQueue.put(collector + '|' + ldatatype + '|' + start + '|' + end)
+                #print(ldatatype + '|' + start + '|' + end)
+            else:
+                currStart = start
+                for dayiter in range(int(sday), int(eday) + 1):
+                    TmpDay = str(dayiter)
+                    TmpDayNext = str(dayiter + 1)
+                    if len(TmpDay) < 2:
+                        TmpDay = '0' + TmpDay
+                    if len(TmpDayNext) < 2:
+                        TmpDayNext = '0' + TmpDayNext
+                    if TmpDay == eday:
+                        currEnd = eyear + emonth + TmpDay + end[8:]
+                    else:
+                        currEnd = eyear + emonth + TmpDay + '235959'
+                    self.rangeQueue.put(collector + '|' + ldatatype + '|' + currStart + '|' + currEnd)
+                    #print(ldatatype + '|' + currStart + '|' + currEnd)
+                    currStart = eyear + emonth + TmpDayNext + '000000'
 
         qSizeVal = self.rangeQueue.qsize()
         checkVal = qSizeVal
