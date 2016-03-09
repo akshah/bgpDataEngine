@@ -459,26 +459,25 @@ class bgpDataEngine(object):
             if item == None:
                 break
             # print('Got '+item)
-            collectors, ldatatype, start, end = item.split('|')
-            for collector in collectors:
-                self.logger.info('Collector: ' + collector + ' | Start: ' + start + ' | End: ' + end)
-                # print('Collector: '+collector+' | Start: '+start+' | End: '+end)
-                bgpFile = self.dirpath + start + '_' + end + '_' + collector + '_' + ldatatype + '.mrt'
-                self.filesDownloaded.append(bgpFile)
-                with open(bgpFile, 'wb') as f:
-                    try:
-                        # buffer = BytesIO()
-                        c = pycurl.Curl()
-                        # c.setopt(c.URL, 'http://pycurl.sourceforge.net/')
-                        url = 'http://bgpmon.io/archive/mrt/' + collector + '/' + ldatatype + '?start=' + start + '&end=' + end
-                        c.setopt(c.URL, url)
-                        # c.setopt(c.URL, 'http://geoinfo.bgpmon.io/asn_country/12145')
-                        c.setopt(c.WRITEDATA, f)
-                        c.perform()
-                        c.close()
-                    except:
-                        self.logger.warn('Empty Range: ' + start + ' to ' + end)
-                        self.rangeQueue.task_done()
+            collector, ldatatype, start, end = item.split('|')
+            self.logger.info('Collector: ' + collector + ' | Start: ' + start + ' | End: ' + end)
+            # print('Collector: '+collector+' | Start: '+start+' | End: '+end)
+            bgpFile = self.dirpath + start + '_' + end + '_' + collector + '_' + ldatatype + '.mrt'
+            self.filesDownloaded.append(bgpFile)
+            with open(bgpFile, 'wb') as f:
+                try:
+                    # buffer = BytesIO()
+                    c = pycurl.Curl()
+                    # c.setopt(c.URL, 'http://pycurl.sourceforge.net/')
+                    url = 'http://bgpmon.io/archive/mrt/' + collector + '/' + ldatatype + '?start=' + start + '&end=' + end
+                    c.setopt(c.URL, url)
+                    # c.setopt(c.URL, 'http://geoinfo.bgpmon.io/asn_country/12145')
+                    c.setopt(c.WRITEDATA, f)
+                    c.perform()
+                    c.close()
+                except:
+                    self.logger.warn('Empty Range: ' + start + ' to ' + end)
+                    self.rangeQueue.task_done()
             self.rangeQueue.task_done()
             # print('Finished '+item)
 
