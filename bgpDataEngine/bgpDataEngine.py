@@ -85,9 +85,9 @@ class bgpDataEngine(object):
 
         #Booleans to keep track of which archive we want to query.
         #If user does not specify anything, by default all will be used to pull data from.
-        self.acessToBGPMonArchive = True
-        self.acessToRVArchive = True
-        self.acessToRipeArchive = True
+        self.accessToBGPMonArchive = True
+        self.accessToRVArchive = True
+        self.accessToRipeArchive = True
 
         self.peer_list = []  # Peer list to keep track of unique peers BGP feeds are seen from
         self.peer_list_lock = threading.Lock()
@@ -198,19 +198,28 @@ class bgpDataEngine(object):
                     print('Collector not valid: ' + str(collc))
                     exit(1)
             if accessToBGPMonArchive:
+                if not self.accessToBGPMonArchive:
+                    self.logger.warn('Ignoring accessToBGPMonArchive boolean, since BGPmon collector is requested.')
                 self.logger.error('BGPmon not enabled yet, sorry!')
-                print('BGPmon not enabled yet, sorry!')
+                self.getRangeFromBGPMon(datatype, start, end,collectors=localbgpmoncollectors)
             if accessToRVArchive:
+                if not self.accessToRVArchive:
+                    self.logger.warn('Ignoring accessToRVArchive boolean, since RouteViews collector is requested.')
                 self.logger.info('Will connect to RouteView archive')
                 self.getRangeFromRV(datatype, start, end,collectors=localrvcollectors)
             if accessToRipeArchive:
+                if not self.accessToRipeArchive:
+                    self.logger.warn('Ignoring accessToRipeArchive boolean, since RIPE collector is requested.')
                 self.logger.info('Will connect to RIPE archive')
                 self.getRangeFromRipe(datatype, start, end,collectors=localripecollectors)
         else:
             # User has not given specific collectors, use all.
-            #self.getRangeFromBGPmon(datatype, start, end)
-            self.getRangeFromRV(datatype, start, end)
-            self.getRangeFromRipe(datatype, start, end)
+            if self.accessToBGPMonArchive:
+                self.getRangeFromBGPmon(datatype, start, end)
+            if self.accessToRVArchive:
+                self.getRangeFromRV(datatype, start, end)
+            if self.accessToRipeArchive:
+                self.getRangeFromRipe(datatype, start, end)
         if load2db:
             self.load2DB()
 
@@ -322,7 +331,7 @@ class bgpDataEngine(object):
             t.join()
         del threadPool[:]
 
-        self.logger.info('Download Finished.')
+        self.logger.info('Download from RouteViews finished.')
 
     def getRangeFromRipe(self, datatype, start, end,collectors=[]):
         self.logger.info('Preparing to pull data from RIPE archive.')
@@ -430,7 +439,7 @@ class bgpDataEngine(object):
             t.join()
         del threadPool[:]
 
-        self.logger.info('Download Finished.')
+        self.logger.info('Download from RIPE finished.')
 
     def _lastDayOfMonth(self, year, month):
         thirtyOneList = ['01', '03', '05', '07', '08', '10', '12']
@@ -450,8 +459,8 @@ class bgpDataEngine(object):
             if item == None:
                 break
             # print('Got '+item)
-            ldatatype, start, end = item.split('|')
-            for collector in self.collectors:
+            collectors, ldatatype, start, end = item.split('|')
+            for collector in collectors:
                 self.logger.info('Collector: ' + collector + ' | Start: ' + start + ' | End: ' + end)
                 # print('Collector: '+collector+' | Start: '+start+' | End: '+end)
                 bgpFile = self.dirpath + start + '_' + end + '_' + collector + '_' + ldatatype + '.mrt'
@@ -488,7 +497,10 @@ class bgpDataEngine(object):
         tableName = type + '_d' + day + '_p' + peerU
         return tableName
 
-    def getRangeFromBGPMon(self, datatype, start, end):
+    def getRangeFromBGPMon(self, datatype, start, end,collectors=[]):
+        self.logger.info('Preparing to pull data from BGPmon archive.')
+        if len(collectors) == 0:
+            collectors = self.bgpmoncollectors
         ldatatype = datatype.lower()
         if (ldatatype != 'ribs' and ldatatype != 'updates'):
             self.logger.error('Incorrect data type. Use ribs or updates.')
@@ -515,15 +527,15 @@ class bgpDataEngine(object):
 
         self.rangeQueue.queue.clear()
         threadPool = []
-        for i in range(self.numThreads):
+        for i in range(30):
             t = threading.Thread(target=self._loadRangeWorker)
             t.daemon = True  # Thread dies when main thread (only non-daemon thread) exits.
             t.start()
             threadPool.append(t)
 
         if (sday == eday):
-            self.rangeQueue.put(ldatatype + '|' + start + '|' + end)
-            print(ldatatype + '|' + start + '|' + end)
+            self.rangeQueue.put(collectors + '|' + ldatatype + '|' + start + '|' + end)
+            #print(ldatatype + '|' + start + '|' + end)
         else:
             currStart = start
             for dayiter in range(int(sday), int(eday) + 1):
@@ -537,8 +549,8 @@ class bgpDataEngine(object):
                     currEnd = eyear + emonth + TmpDay + end[8:]
                 else:
                     currEnd = eyear + emonth + TmpDay + '235959'
-                self.rangeQueue.put(ldatatype + '|' + currStart + '|' + currEnd)
-                print(ldatatype + '|' + currStart + '|' + currEnd)
+                self.rangeQueue.put(collectors + '|' + ldatatype + '|' + currStart + '|' + currEnd)
+                #print(ldatatype + '|' + currStart + '|' + currEnd)
                 currStart = eyear + emonth + TmpDayNext + '000000'
 
         qSizeVal = self.rangeQueue.qsize()
@@ -549,9 +561,9 @@ class bgpDataEngine(object):
                 checkVal -= 1000
             qSizeVal = self.rangeQueue.qsize()
 
-        self.rangeQueue.join()
-        for i in range(self.numThreads):
+        for i in range(30):
             self.rangeQueue.put(None)
+        self.rangeQueue.join()
         for t in threadPool:
             t.join()
         del threadPool[:]
