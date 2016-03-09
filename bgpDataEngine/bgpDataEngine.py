@@ -188,10 +188,10 @@ class bgpDataEngine(object):
                 if collc in self.bgpmoncollectors:
                     localbgpmoncollectors.append(collc)
                     accessToBGPMonArchive = True
-                if collc in self.rvcollectors:
+                elif collc in self.rvcollectors:
                     localrvcollectors.append(collc)
                     accessToRVArchive = True
-                if collc in self.ripecollectors:
+                elif collc in self.ripecollectors:
                     localripecollectors.append(collc)
                     accessToRipeArchive = True
                 else:
