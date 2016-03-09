@@ -302,7 +302,6 @@ class bgpDataEngine(object):
                 for fileURL in fileNames:
                     totalFileCounter += 1
                     self.queueRV.put(fileURL)
-                print(self.queueRV.qsize())
 
         self.logger.info(str(totalFileCounter) + ' file(s) in queue, waiting for download to finish.')
 
