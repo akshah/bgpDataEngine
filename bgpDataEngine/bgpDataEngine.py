@@ -313,6 +313,7 @@ class bgpDataEngine(object):
         self.logger.info('Download Finished.')
 
     def getRangeFromRipe(self, datatype, start, end):
+        self.logger.info('Preparing the pull data from RIPE archive.')
         ldatatype = datatype.lower()
         if (ldatatype != 'ribs' and ldatatype != 'updates'):
             self.logger.error('Incorrect data type. Use ribs or updates.')
