@@ -482,7 +482,7 @@ class bgpDataEngine(object):
                 except:
                     self.logger.warn('Empty Range: ' + start + ' to ' + end)
                     #Should delete the empty file
-                    os.remove(bgpFile)
+                    #os.remove(bgpFile)
             self.rangeQueue.task_done()
 
     def getTableName(self, type, peer, day):
