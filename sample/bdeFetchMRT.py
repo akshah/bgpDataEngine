@@ -13,7 +13,7 @@ if __name__ == '__main__':
     bde=bgpDataEngine()
 
     #Fetch entire month
-    bde.getMonth('updates','2016','03',load2db=False)
+    bde.getMonth('updates','2016','03',load2db=False,collectors=['route-views.jinx','rrc00','bgpmon'])
 
 
     #bde.getRange('updates','20140701','20140705',collectors=['route-views.jinx'])
