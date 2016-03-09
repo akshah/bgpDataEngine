@@ -117,6 +117,7 @@ class bgpDataEngine(object):
     def __downloadFileWorker(self):
         print('In download worker')
         while True:
+            print('In download worker loop')
             item = self.queueRV.get()
             if item == None:
                 break
