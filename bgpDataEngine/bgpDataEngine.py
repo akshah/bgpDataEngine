@@ -541,7 +541,7 @@ class bgpDataEngine(object):
                 self.rangeQueue.put(collector + '|' + ldatatype + '|' + start + '|' + end)
                 #print(ldatatype + '|' + start + '|' + end)
             else:
-                currStart = start
+                currStart = start + '000000'
                 for dayiter in range(int(sday), int(eday) + 1):
                     TmpDay = str(dayiter)
                     TmpDayNext = str(dayiter + 1)
