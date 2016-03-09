@@ -466,7 +466,7 @@ class bgpDataEngine(object):
             self.logger.info('Collector: ' + collector + ' | Start: ' + start + ' | End: ' + end)
             # print('Collector: '+collector+' | Start: '+start+' | End: '+end)
             #Dir structure : collector/year/month/
-            bgpFile = self.dirpath + '/' + collector + '/' + collector + '/' + start[:3] + '/' + start[4:6] + '/' + '.' + ldatatype + start[:8] + '.' + start[8:12] + '.mrt'
+            bgpFile = self.dirpath + '/' + collector + '/' + start[:3] + '/' + start[4:6] + '/' + collector +'.' + ldatatype + start[:8] + '.' + start[8:12] + '.mrt'
             os.makedirs(os.path.dirname(bgpFile), exist_ok=True)
             self.filesDownloaded.append(bgpFile)
             with open(bgpFile, 'wb') as f:
