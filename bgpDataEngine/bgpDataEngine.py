@@ -478,9 +478,7 @@ class bgpDataEngine(object):
                     c.close()
                 except:
                     self.logger.warn('Empty Range: ' + start + ' to ' + end)
-                    self.rangeQueue.task_done()
             self.rangeQueue.task_done()
-            # print('Finished '+item)
 
     def getTableName(self, type, peer, day):
         peerU = peer
