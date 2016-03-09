@@ -82,7 +82,7 @@ class bgpDataEngine(object):
                              'route-views.perth', 'route-views.sfmix', 'route-views.soxrs']
         self.ripecollectors = ['rrc00', 'rrc01', 'rrc02', 'rrc03', 'rrc04', 'rrc05', 'rrc06', 'rrc07', 'rrc08', 'rrc09',
                                'rrc10', 'rrc11', 'rrc12', 'rrc13', 'rrc14', 'rrc15', 'rrc16']
-        self.ripecollectors = ['rrc00']
+        self.ripecollectors = ['rrc02']
         self.collectors = self.rvcollectors  # This will get overwritten if user gives a collector list
 
         self.acessToBGPMonArchive = True
@@ -313,7 +313,7 @@ class bgpDataEngine(object):
         self.logger.info('Download Finished.')
 
     def getRangeFromRipe(self, datatype, start, end):
-        self.logger.info('Preparing the pull data from RIPE archive.')
+        self.logger.info('Preparing to pull data from RIPE archive.')
         ldatatype = datatype.lower()
         if (ldatatype != 'ribs' and ldatatype != 'updates'):
             self.logger.error('Incorrect data type. Use ribs or updates.')
