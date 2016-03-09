@@ -201,7 +201,7 @@ class bgpDataEngine(object):
                 if not self.accessToBGPMonArchive:
                     self.logger.warn('Ignoring accessToBGPMonArchive boolean, since BGPmon collector is requested.')
                 self.logger.info('Will connect to BGPmon archive.')
-                self.getRangeFromBGPMon(datatype, start, end,collectors=localbgpmoncollectors)
+                self.getRangeFromBGPmon(datatype, start, end,collectors=localbgpmoncollectors)
             if accessToRVArchive:
                 if not self.accessToRVArchive:
                     self.logger.warn('Ignoring accessToRVArchive boolean, since RouteViews collector is requested.')
@@ -497,7 +497,7 @@ class bgpDataEngine(object):
         tableName = type + '_d' + day + '_p' + peerU
         return tableName
 
-    def getRangeFromBGPMon(self, datatype, start, end,collectors=[]):
+    def getRangeFromBGPmon(self, datatype, start, end,collectors=[]):
         self.logger.info('Preparing to pull data from BGPmon archive.')
         if len(collectors) == 0:
             collectors = self.bgpmoncollectors
