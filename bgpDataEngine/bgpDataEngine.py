@@ -119,6 +119,7 @@ class bgpDataEngine(object):
         while True:
             item = self.queueRV.get()
             if item == None:
+                self.queueRV.task_done()
                 break
             # print(item)
             try:
@@ -313,10 +314,9 @@ class bgpDataEngine(object):
                 checkVal -= 1000
             qSizeVal = self.queueRV.qsize()
 
-        self.queueRV.join()
-
         for i in range(30):
             self.queueRV.put(None)
+        self.queueRV.join()
         for t in threadPool:
             t.join()
         del threadPool[:]
@@ -422,10 +422,9 @@ class bgpDataEngine(object):
                 checkVal -= 1000
             qSizeVal = self.queueRV.qsize()
 
-        self.queueRV.join()
-
         for i in range(30):
             self.queueRV.put(None)
+        self.queueRV.join()
         for t in threadPool:
             t.join()
         del threadPool[:]
