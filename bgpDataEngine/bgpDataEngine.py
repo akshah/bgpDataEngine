@@ -124,6 +124,7 @@ class bgpDataEngine(object):
                 tryCounter, collector, year, month, day, url = item.split('|')
             except:
                 # Some weird queue item, skip it
+                self.logger.error('Problem in splitting the queue item.')
                 self.queueRV.task_done()
                 continue
 
@@ -319,7 +320,7 @@ class bgpDataEngine(object):
             exit(1)
         if (ldatatype == 'ribs'):
             ldatatype = 'bview' #Ripe calls RIBS bview
-            exit(1)
+
         if (int(start) > int(end)):
             print('Start time cannot be before End time.')
             exit(1)
