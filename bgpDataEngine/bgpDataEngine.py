@@ -215,8 +215,10 @@ class bgpDataEngine(object):
         if load2db:
             self.load2DB()
 
-    def getRangeFromRV(self, datatype, start, end,collectors=self.rvcollectors):
+    def getRangeFromRV(self, datatype, start, end,collectors=[]):
         self.logger.info('Preparing to pull data from RouteViews archive.')
+        if len(collectors) == 0:
+            collectors = self.rvcollectors
         ldatatype = datatype.lower()
         if (ldatatype != 'ribs' and ldatatype != 'updates'):
             self.logger.error('Incorrect data type. Use ribs or updates.')
@@ -322,8 +324,10 @@ class bgpDataEngine(object):
 
         self.logger.info('Download Finished.')
 
-    def getRangeFromRipe(self, datatype, start, end,collectors=self.ripecollectors):
+    def getRangeFromRipe(self, datatype, start, end,collectors=[]):
         self.logger.info('Preparing to pull data from RIPE archive.')
+        if len(collectors) == 0:
+            collectors = self.ripecollectors
         ldatatype = datatype.lower()
         if (ldatatype != 'ribs' and ldatatype != 'updates'):
             self.logger.error('Incorrect data type. Use ribs or updates.')
