@@ -220,7 +220,9 @@ class bgpDataEngine(object):
                 self.getRangeFromRV(datatype, start, end)
             if self.accessToRipeArchive:
                 self.getRangeFromRipe(datatype, start, end)
+        self.logger.info('All downloads finished.')
         if load2db:
+            self.logger.info('Will push data to MySQL.')
             self.load2DB()
 
     def getRangeFromRV(self, datatype, start, end,collectors=[]):
