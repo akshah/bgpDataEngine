@@ -457,6 +457,7 @@ class bgpDataEngine(object):
         while True:
             item = self.rangeQueue.get()
             if item == None:
+                self.rangeQueue.task_done()
                 break
             # print('Got '+item)
             collector, ldatatype, start, end = item.split('|')
@@ -471,7 +472,6 @@ class bgpDataEngine(object):
                     # c.setopt(c.URL, 'http://pycurl.sourceforge.net/')
                     url = 'http://bgpmon.io/archive/mrt/' + collector + '/' + ldatatype + '?start=' + start + '&end=' + end
                     c.setopt(c.URL, url)
-                    # c.setopt(c.URL, 'http://geoinfo.bgpmon.io/asn_country/12145')
                     c.setopt(c.WRITEDATA, f)
                     c.perform()
                     c.close()
