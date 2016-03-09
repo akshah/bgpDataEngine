@@ -82,13 +82,14 @@ class bgpDataEngine(object):
                              'route-views.perth', 'route-views.sfmix', 'route-views.soxrs']
         self.ripecollectors = ['rrc00', 'rrc01', 'rrc02', 'rrc03', 'rrc04', 'rrc05', 'rrc06', 'rrc07', 'rrc08', 'rrc09',
                                'rrc10', 'rrc11', 'rrc12', 'rrc13', 'rrc14', 'rrc15', 'rrc16']
-        self.ripecollectors = ['rrc00']
-        self.collectors = self.rvcollectors  # This will get overwritten if user gives a collector list
 
+        #Booleans to keep track of which archive we want to query.
+        #If user does not specify anything, by default all will be used to pull data from.
         self.acessToBGPMonArchive = True
         self.acessToRVArchive = True
+        self.acessToRipeArchive = True
 
-        self.peer_list = []
+        self.peer_list = []  # Peer list to keep track of unique peers BGP feeds are seen from
         self.peer_list_lock = threading.Lock()
         self.filesDownloaded = []
         self.tableNameList = []
@@ -97,7 +98,7 @@ class bgpDataEngine(object):
 
         # Queue to hold filelist
         self.rangeQueue = Queue()
-        self.queueRV = Queue()
+        self.queueRV = Queue()  # Queue to hold list of URLs to be downloaded
 
         self.messageQueue = mQueue()
 
@@ -127,8 +128,6 @@ class bgpDataEngine(object):
                 self.logger.error('Problem in splitting the queue item.')
                 self.queueRV.task_done()
                 continue
-
-            print(item)
 
             tryCounter = int(tryCounter)
             if tryCounter == 3:
@@ -178,35 +177,46 @@ class bgpDataEngine(object):
             print('Please use valid path for MRT download. Not valid: ' + self.dirpath)
             exit(1)
         if (len(collectors) > 0):
-            # Check if the collector list if correct
+            # Prepare respective list for the archives
+            accessToBGPMonArchive = False
+            accessToRVArchive = False
+            accessToRipeArchive = False
+            localbgpmoncollectors=[]
+            localrvcollectors=[]
+            localripecollectors=[]
             for collc in collectors:
-                if self.acessToBGPMonArchive:
-                    if not collc in self.bgpmoncollectors:
-                        # print('Not in BGPmon list')
-                        self.acessToBGPMonArchive = False
-                if self.acessToRVArchive:
-                    if not collc in self.rvcollectors:
-                        # print('Not in RV list')
-                        self.acessToRVArchive = False
-
-            # print(self.acessToBGPMonArchive,self.acessToRVArchive)
-            if self.acessToBGPMonArchive:
-                self.collectors = collectors
-                self.logger.info('Will connect to BGPMon archive only.')
-            elif self.acessToRVArchive:
-                self.collectors = collectors
-                self.logger.info('Will connect to RouteViews archive only.')
-            else:
-                self.logger.error('Collector list not Valid: ' + str(collectors))
-                print('Collector list not Valid: ' + str(collectors))
-                exit(1)
-
-        #self.getRangeFromRV(datatype, start, end)
-        self.getRangeFromRipe(datatype, start, end)
+                if collc in self.bgpmoncollectors:
+                    localbgpmoncollectors.append(collc)
+                    accessToBGPMonArchive = True
+                if collc in self.rvcollectors:
+                    localrvcollectors.append(collc)
+                    accessToRVArchive = True
+                if collc in self.ripecollectors:
+                    localripecollectors.append(collc)
+                    accessToRipeArchive = True
+                else:
+                    self.logger.error('Collector not valid: ' + str(collc))
+                    print('Collector not valid: ' + str(collc))
+                    exit(1)
+            if accessToBGPMonArchive:
+                self.logger.error('BGPmon not enabled yet, sorry!')
+                print('BGPmon not enabled yet, sorry!')
+            if accessToRVArchive:
+                self.logger.info('Will connect to RouteView archive')
+                self.getRangeFromRV(datatype, start, end,collectors=localrvcollectors)
+            if accessToRipeArchive:
+                self.logger.info('Will connect to RIPE archive')
+                self.getRangeFromRipe(datatype, start, end,collectors=localripecollectors)
+        else:
+            # User has not given specific collectors, use all.
+            #self.getRangeFromBGPmon(datatype, start, end)
+            self.getRangeFromRV(datatype, start, end)
+            self.getRangeFromRipe(datatype, start, end)
         if load2db:
             self.load2DB()
 
-    def getRangeFromRV(self, datatype, start, end):
+    def getRangeFromRV(self, datatype, start, end,collectors=self.rvcollectors):
+        self.logger.info('Preparing to pull data from RouteViews archive.')
         ldatatype = datatype.lower()
         if (ldatatype != 'ribs' and ldatatype != 'updates'):
             self.logger.error('Incorrect data type. Use ribs or updates.')
@@ -258,7 +268,7 @@ class bgpDataEngine(object):
             year = dr[:4]
             month = dr[4:6]
             day = dr[6:8]
-            for collector in self.rvcollectors:
+            for collector in collectors:
                 url = "http://archive.routeviews.org/"
                 indexFile = collector + '_' + dr + 'index.download'
                 fileNames = []
@@ -312,7 +322,7 @@ class bgpDataEngine(object):
 
         self.logger.info('Download Finished.')
 
-    def getRangeFromRipe(self, datatype, start, end):
+    def getRangeFromRipe(self, datatype, start, end,collectors=self.ripecollectors):
         self.logger.info('Preparing to pull data from RIPE archive.')
         ldatatype = datatype.lower()
         if (ldatatype != 'ribs' and ldatatype != 'updates'):
@@ -368,7 +378,7 @@ class bgpDataEngine(object):
             year = dr[:4]
             month = dr[4:6]
             day = dr[6:8]
-            for collector in self.ripecollectors:
+            for collector in collectors:
                 url = "http://data.ris.ripe.net/"
                 indexFile = collector + '_' + dr + 'index.download'
                 fileNames = []
