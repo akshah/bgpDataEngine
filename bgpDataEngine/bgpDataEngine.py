@@ -166,8 +166,6 @@ class bgpDataEngine(object):
                 self.queueRV.put(str(tryCounter) + '|' + collector + '|' + url)
             finally:
                 self.queueRV.task_done()
-                # Doesn't really matter, waiting a little bit is a good idea
-                # time.sleep(0.001)
 
     def getRange(self, datatype, start, end, load2db=True, collectors=[]):
         self.dirpath = self.config['DEFAULTDIRS']['MRTDir']
@@ -237,12 +235,15 @@ class bgpDataEngine(object):
         eday = end[6:8]
         if (syear != eyear):
             print('Please use start and end range in same year.')
+            self.logger.error('Please use start and end range in same year.')
             exit(1)
         if (smonth != emonth):
             print('Please use start and end range in same month.')
+            self.logger.error('Please use start and end range in same month.')
             exit(1)
         if (len(start) > 8 or len(end) > 8):
-            print('This function only fetches per-day. Ignoring hour:min:sec info.')
+            self.logger.warn('Note, getRange functions only fetch per-day. Ignoring hour:min:sec info.')
+            print('Note, getRange functions only fetch per-day. Ignoring hour:min:sec info.')
 
         # print('Fetch '+ldatatype+' from '+start+' to '+end)
         self.queueRV.queue.clear()
@@ -562,8 +563,8 @@ class bgpDataEngine(object):
             return 1
         daystart = '01'
         dayend = self._lastDayOfMonth(year, month)
-        start = year + month + daystart + '000000'
-        end = year + month + dayend + '235959'
+        start = year + month + daystart  # + '000000'
+        end = year + month + dayend  # + '235959'
         self.getRange(datatype, start, end, load2db=load2db,collectors=collectors)
 
     def _checkIfTableExists(self, table):
