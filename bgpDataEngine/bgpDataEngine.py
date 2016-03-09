@@ -200,17 +200,17 @@ class bgpDataEngine(object):
             if accessToBGPMonArchive:
                 if not self.accessToBGPMonArchive:
                     self.logger.warn('Ignoring accessToBGPMonArchive boolean, since BGPmon collector is requested.')
-                self.logger.error('BGPmon not enabled yet, sorry!')
+                self.logger.info('Will connect to BGPmon archive.')
                 self.getRangeFromBGPMon(datatype, start, end,collectors=localbgpmoncollectors)
             if accessToRVArchive:
                 if not self.accessToRVArchive:
                     self.logger.warn('Ignoring accessToRVArchive boolean, since RouteViews collector is requested.')
-                self.logger.info('Will connect to RouteView archive')
+                self.logger.info('Will connect to RouteViews archive.')
                 self.getRangeFromRV(datatype, start, end,collectors=localrvcollectors)
             if accessToRipeArchive:
                 if not self.accessToRipeArchive:
                     self.logger.warn('Ignoring accessToRipeArchive boolean, since RIPE collector is requested.')
-                self.logger.info('Will connect to RIPE archive')
+                self.logger.info('Will connect to RIPE archive.')
                 self.getRangeFromRipe(datatype, start, end,collectors=localripecollectors)
         else:
             # User has not given specific collectors, use all.
