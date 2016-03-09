@@ -115,9 +115,7 @@ class bgpDataEngine(object):
             exit(1)
 
     def __downloadFileWorker(self):
-        print('In download worker')
         while True:
-            print('In download worker loop')
             item = self.queueRV.get()
             if item == None:
                 break
@@ -389,7 +387,7 @@ class bgpDataEngine(object):
                 tryCounter = 0  # Threads will increment this if needed to try again
                 with open(indexFile, 'r') as readFile:
                     for line in readFile:
-                        if ldatatype + year + month + day in line:
+                        if ldatatype + "." + year + month + day in line:
                             vals = line.split('href=\"')
                             vals2 = vals[1].split('\">')
                             fileNames.append(str(
