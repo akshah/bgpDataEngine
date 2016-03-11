@@ -10,17 +10,21 @@ from customUtilities.helperFunctions import *
 if __name__ == '__main__':
     start_time,_=currentTime()
 
-    bde=bgpDataEngine(configfile='conf/custom.conf')
+    bde=bgpDataEngine()
     #Simply read an MRT file
     file="rrc00.bview.20160301.0000.gz"
 
     bde.readMRT(file)
-    bde.messageQueueCloseRead()
-    while True:
+    try:
         val=bde.messageQueue.get()
-        if not val:
-            break
-        print(val)
+        while val:
+            val=bde.messageQueue.get()
+    except:
+        print('Error in reading message queue.')
+
+    #if not val:
+    #    break
+    #print(val)
 
     end_time,_=currentTime()
     print('Finished processing in '+str(int((end_time-start_time)/60))+' minutes and '+str(int((end_time-start_time)%60))+' seconds.')
