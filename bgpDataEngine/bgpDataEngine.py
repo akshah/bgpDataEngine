@@ -714,13 +714,9 @@ class bgpDataEngine(object):
         else:
             return
 
-    def messageClearQueue(self):
-        self.messageQueue.queue.clear()
-        self.logger.info('Cleared message queue.')
-
-    def closeQueue(self):
+    def messageQueueCloseRead(self):
         self.messageQueue.put(None)
-        self.logger.info('Closing message queue.')
+        self.logger.info('Closing message queue read.')
 
     def load2DB(self, mrtFiles=[]):
         if len(mrtFiles) == 0:
@@ -788,7 +784,7 @@ class bgpDataEngine(object):
             dblocal.close()
             self.messageQueue.put(None)
             # return pid
-            exit(0)
+            #exit(0)
         else:
             return
 

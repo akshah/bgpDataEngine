@@ -13,9 +13,9 @@ if __name__ == '__main__':
     bde=bgpDataEngine(configfile='conf/custom.conf')
     #Simply read an MRT file
     file="rrc00.bview.20160301.0000.gz"
-    bde.messageClearQueue()
+
     bde.readMRT(file)
-    bde.closeQueue()
+    bde.messageQueueCloseRead()
     while True:
         val=bde.messageQueue.get()
         if not val:
