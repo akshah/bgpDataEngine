@@ -701,7 +701,7 @@ class bgpDataEngine(object):
             except:
                 self.logger.error('BGP file '+MRTfile+' could not be read properly.')
                 print('BGP file '+MRTfile+' could not be read properly.')
-                return
+                exit(0)
 
             for line in lines.split("\n"):
                 line.rstrip('\n')
