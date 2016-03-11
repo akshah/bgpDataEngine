@@ -714,6 +714,14 @@ class bgpDataEngine(object):
         else:
             return
 
+    def messageClearQueue(self):
+        self.messageQueue.queue.clear()
+        self.logger.info('Cleared message queue.')
+
+    def closeQueue(self):
+        self.messageQueue.put(None)
+        self.logger.info('Closing message queue.')
+
     def load2DB(self, mrtFiles=[]):
         if len(mrtFiles) == 0:
             mrtFiles = self.filesDownloaded
