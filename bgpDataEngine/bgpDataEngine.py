@@ -694,7 +694,6 @@ class bgpDataEngine(object):
 
     #Method to read a MRT file
     def readMRT(self,MRTfile):
-        print('Reading {0}'.format(MRTfile))
         pid = os.fork()
         if pid == 0:
             try:
