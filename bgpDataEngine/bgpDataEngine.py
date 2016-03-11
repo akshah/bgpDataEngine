@@ -701,7 +701,7 @@ class bgpDataEngine(object):
                 lines = subprocess.check_output(["bgpdump", "-m", MRTfile], universal_newlines=True)
             except:
                 self.logger.error('BGP file '+MRTfile+' could not be read properly.')
-                print('BGP file '+fn+' could not be read properly.')
+                print('BGP file '+MRTfile+' could not be read properly.')
                 return
 
             for line in lines.split("\n"):
