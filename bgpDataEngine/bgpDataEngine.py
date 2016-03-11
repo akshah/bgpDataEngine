@@ -692,6 +692,28 @@ class bgpDataEngine(object):
                     break
         return False
 
+    #Method to read a MRT file
+    def readMRT(self,MRTfile):
+        print('Reading {0}'.format(MRTfile))
+        pid = os.fork()
+        if pid == 0:
+            try:
+                lines = subprocess.check_output(["bgpdump", "-m", MRTfile], universal_newlines=True)
+            except:
+                self.logger.error('BGP file '+fn+' could not be read properly.')
+                print('BGP file '+fn+' could not be read properly.')
+                return
+
+            for line in lines.split("\n"):
+                line.rstrip('\n')
+                if line.startswith("BGP") or line.startswith('TABLE'):  # Eliminate possibility of empty rows
+                    pieces = line.split('|')
+                    self.messageQueue.put(pieces)
+            self.messageQueue.put(None)
+            exit(0)
+        else:
+            return
+
     def load2DB(self, mrtFiles=[]):
         if len(mrtFiles) == 0:
             mrtFiles = self.filesDownloaded
@@ -893,7 +915,6 @@ def manageDuplicateRows(table):
                 print('DB connection error.I quit.')
                 break
     return False
-
 
 def loadWorkerForProcessPool(fn):
     tryCounter = 0
