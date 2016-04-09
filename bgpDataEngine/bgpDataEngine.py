@@ -475,6 +475,7 @@ class bgpDataEngine(object):
                     c = pycurl.Curl()
                     # c.setopt(c.URL, 'http://pycurl.sourceforge.net/')
                     url = 'http://bgpmon.io/archive/mrt/' + collector + '/' + ldatatype + '?start=' + start + '&end=' + end
+                    print(url)
                     c.setopt(c.URL, url)
                     c.setopt(c.WRITEDATA, f)
                     c.perform()
