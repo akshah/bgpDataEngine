@@ -508,9 +508,9 @@ class bgpDataEngine(object):
         if (ldatatype != 'ribs' and ldatatype != 'updates'):
             self.logger.error('Incorrect data type. Use ribs or updates.')
             return 1
-        if (start == end):
-            print('Start and End cannot be same.')
-            exit(1)
+        #if (start == end):
+        #    print('Start and End cannot be same.')
+        #    exit(1)
         if (int(start) > int(end)):
             print('Start time cannot be before End time.')
             exit(1)
@@ -538,7 +538,7 @@ class bgpDataEngine(object):
 
         for collector in collectors:
             if (sday == eday):
-                self.rangeQueue.put(collector + '|' + ldatatype + '|' + start + '|' + end)
+                self.rangeQueue.put(collector + '|' + ldatatype + '|' + start + '000000' + '|' + end + '235959')
                 #print(ldatatype + '|' + start + '|' + end)
             else:
                 currStart = start + '000000'
