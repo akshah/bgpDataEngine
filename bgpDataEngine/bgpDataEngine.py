@@ -550,7 +550,7 @@ class bgpDataEngine(object):
                     if len(TmpDayNext) < 2:
                         TmpDayNext = '0' + TmpDayNext
                     if TmpDay == eday:
-                        currEnd = eyear + emonth + TmpDay + end[8:]
+                        currEnd = eyear + emonth + TmpDay + '235959'
                     else:
                         currEnd = eyear + emonth + TmpDay + '235959'
                     self.rangeQueue.put(collector + '|' + ldatatype + '|' + currStart + '|' + currEnd)
