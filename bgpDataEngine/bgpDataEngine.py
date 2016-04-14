@@ -539,7 +539,11 @@ class bgpDataEngine(object):
 
         for collector in collectors:
             if (sday == eday):
-                self.rangeQueue.put(collector + '|' + ldatatype + '|' + start + '000000' + '|' + end + '235959')
+                if len(start)==6:
+                    start=start + '000000'
+                if len(end)==6:
+                    end=end + '000000'
+                self.rangeQueue.put(collector + '|' + ldatatype + '|' + start + '|' + end )
                 #print(ldatatype + '|' + start + '|' + end)
             else:
                 currStart = start + '000000'
