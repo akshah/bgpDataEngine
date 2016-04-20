@@ -167,7 +167,7 @@ class bgpDataEngine(object):
             finally:
                 self.queueRV.task_done()
 
-    def getRange(self, datatype, start, end, load2db=True, collectors=[]):
+    def getRange(self, datatype, start, end, load2db=False, collectors=[]):
         self.dirpath = self.config['DEFAULTDIRS']['MRTDir']
         if os.path.exists(self.dirpath):
             self.logger.info('Using ' + self.dirpath + ' for downloading MRT Files')
