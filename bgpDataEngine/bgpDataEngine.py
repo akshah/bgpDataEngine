@@ -175,6 +175,16 @@ class bgpDataEngine(object):
             self.logger.error('Please use valid path for MRT download.')
             print('Please use valid path for MRT download. Not valid: ' + self.dirpath)
             exit(1)
+
+        try:
+            if(len(start)>14 or len(start)>14):
+                print('Date ranges dont look correct: {0} and {1}'.format(start,end))
+                self.logger.error('Date ranges dont look correct: {0} and {1}'.format(start,end))
+            intStart=int(start)
+            intEnd=int(end)
+        except:
+            self.logger.error('Date ranges dont look correct: {0} and {1}'.format(start,end))
+
         if (len(collectors) > 0):
             # Prepare respective list for the archives
             accessToBGPMonArchive = False
@@ -547,6 +557,7 @@ class bgpDataEngine(object):
                 #print(ldatatype + '|' + start + '|' + end)
             else:
                 currStart = start
+                endHourStr = end[9:]
                 for dayiter in range(int(sday), int(eday) + 1):
                     TmpDay = str(dayiter)
                     TmpDayNext = str(dayiter + 1)
@@ -555,7 +566,7 @@ class bgpDataEngine(object):
                     if len(TmpDayNext) < 2:
                         TmpDayNext = '0' + TmpDayNext
                     if TmpDay == eday:
-                        currEnd = eyear + emonth + TmpDay + '235959'
+                        currEnd = eyear + emonth + TmpDay + endHourStr
                     else:
                         currEnd = eyear + emonth + TmpDay + '235959'
                     self.rangeQueue.put(collector + '|' + ldatatype + '|' + currStart + '|' + currEnd)
