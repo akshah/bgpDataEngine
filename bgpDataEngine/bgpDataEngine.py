@@ -516,6 +516,10 @@ class bgpDataEngine(object):
             print('Start time cannot be before End time.')
             exit(1)
 
+        if len(start)==6:
+            start=start + '000000'
+        if len(end)==6:
+            end=end + '235959'
         syear = start[:4]
         smonth = start[4:6]
         sday = start[6:8]
@@ -539,14 +543,10 @@ class bgpDataEngine(object):
 
         for collector in collectors:
             if (sday == eday):
-                if len(start)==6:
-                    start=start + '000000'
-                if len(end)==6:
-                    end=end + '000000'
                 self.rangeQueue.put(collector + '|' + ldatatype + '|' + start + '|' + end )
                 #print(ldatatype + '|' + start + '|' + end)
             else:
-                currStart = start + '000000'
+                currStart = start
                 for dayiter in range(int(sday), int(eday) + 1):
                     TmpDay = str(dayiter)
                     TmpDayNext = str(dayiter + 1)
