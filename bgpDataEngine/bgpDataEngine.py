@@ -143,6 +143,7 @@ class bgpDataEngine(object):
             # Check if file already exists
             dowloadFileNameWithPath = self.dirpath + collector + '/' + year + '/' + month + '/' + day + '/' + collector + '.' + os.path.basename(
                 url)
+            print(dowloadFileNameWithPath)
             if os.path.isfile(dowloadFileNameWithPath):
                 # print('File already present')
                 self.queueRV.task_done()
