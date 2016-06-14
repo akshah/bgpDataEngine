@@ -974,24 +974,24 @@ def loadWorkerForProcessPool(fn):
                                               db=config['MySQL']['dbname'])
                     with closing(dblocal.cursor()) as cur:
 
-                        ##try:
-                        ##    fileName=tableDirPath+table+"."+poolWorkerName
-                        ##    query='load data local infile \''+fileName+'\' into table '+table+' fields terminated by \'|\' lines terminated by \'\n\' \
-                        ##    (BGPVersion,MsgTime,MsgType,PeerAS,PeerIP,PrefixOriginAS,PrefixIP,PrefixMask,ASPath,ASPathLength,ASPathLengthSimple,Origin,NextHop,LocalPref,Med,Community,AggregateID,AggregateIP,MsgHash) SET ID = NULL;'
-                        ##    #print('Pushed '+table)
-                        ##    cur.execute(query)
-                        ##    dblocal.commit()
-                        ##except:
-                        ##    traceback.print_exc()
-
-                        query = "insert ignore into {0} (id,BGPVersion,MsgTime,MsgType,PeerAS,PeerIP,PrefixOriginAS,PrefixIP,PrefixMask,ASPath,ASPathLength,ASPathLengthSimple,Origin,NextHop,LocalPref,Med,Community,AggregateID,AggregateIP,MsgHash)".format(
-                            table)
                         try:
-                            cur.executemany(
-                                query + " values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", data)
+                            fileName=tableDirPath+table+"."+poolWorkerName
+                            query='load data local infile \''+fileName+'\' into table '+table+' fields terminated by \'|\' lines terminated by \'\n\' \
+                            (BGPVersion,MsgTime,MsgType,PeerAS,PeerIP,PrefixOriginAS,PrefixIP,PrefixMask,ASPath,ASPathLength,ASPathLengthSimple,Origin,NextHop,LocalPref,Med,Community,AggregateID,AggregateIP,MsgHash) SET ID = NULL;'
+                            #print('Pushed '+table)
+                            cur.execute(query)
                             dblocal.commit()
                         except:
-                            pass
+                            traceback.print_exc()
+
+                        ##query = "insert ignore into {0} (id,BGPVersion,MsgTime,MsgType,PeerAS,PeerIP,PrefixOriginAS,PrefixIP,PrefixMask,ASPath,ASPathLength,ASPathLengthSimple,Origin,NextHop,LocalPref,Med,Community,AggregateID,AggregateIP,MsgHash)".format(
+                        ##    table)
+                        ##try:
+                        ##    cur.executemany(
+                        ##        query + " values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", data)
+                        ##    dblocal.commit()
+                        ##except:
+                        ##    pass
 
                             #    traceback.print_exc()
                             # for l in data:
@@ -1010,6 +1010,7 @@ def loadWorkerForProcessPool(fn):
                             #    dblocal.commit()
                             # except:
                             #    pass
+                    dblocal.commit()
                     dblocal.close()
 
                 except OperationalError as exp:
@@ -1314,7 +1315,7 @@ def loadWorkerForProcessPool(fn):
                         continue  # No table was created will skip
 
             # Write to local files
-            # localwriteToFile()
+            localwriteToFile()
             pushToDB = True
             # Push to DB
             if pushToDB:
