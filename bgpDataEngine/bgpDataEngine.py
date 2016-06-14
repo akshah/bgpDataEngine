@@ -981,6 +981,7 @@ def loadWorkerForProcessPool(fn):
                             #print('Pushed '+table)
                             cur.execute(query)
                             dblocal.commit()
+                            os.remove(fileName)
                         except:
                             traceback.print_exc()
 
