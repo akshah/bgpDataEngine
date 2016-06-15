@@ -229,8 +229,8 @@ class bgpDataEngine(object):
                 self.getRangeFromRipe(datatype, start, end,collectors=localripecollectors)
         else:
             # User has not given specific collectors, use all.
-            #if self.accessToBGPMonArchive:
-            #    self.getRangeFromBGPmon(datatype, start, end)
+            if self.accessToBGPMonArchive:
+                self.getRangeFromBGPmon(datatype, start, end)
             if self.accessToRVArchive:
                 self.getRangeFromRV(datatype, start, end)
             if self.accessToRipeArchive:
