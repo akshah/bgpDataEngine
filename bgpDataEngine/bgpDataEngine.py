@@ -986,6 +986,7 @@ def loadWorkerForProcessPool(fn):
                             #print('Pushed '+table)
                             cur.execute(query)
                             dblocal.commit()
+                            print('Loaded '+fileName+' to DB',flush=True)
                             os.remove(fileName)
                         except:
                             traceback.print_exc()
@@ -1343,12 +1344,13 @@ def loadWorkerForProcessPool(fn):
                 return
 
         except OperationalError:
-            if tryCounter < 1000:
+            if tryCounter < 3:
                 # self.logger.error('No DB Connection available.. Will try again..')
+                print('DB connection error. Will try again..',flush=True)
                 time.sleep(0.001)
                 tryCounter += 1
-                continue
+                pass
             else:
-                print('DB connection error.')
+                print('DB connection error. Escaping.',flush=True)
                 break
     return False
