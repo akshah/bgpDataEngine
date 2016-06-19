@@ -766,6 +766,7 @@ class bgpDataEngine(object):
         self.logger.info('Prepared all processed tables.')
 
         # Manage Indexes
+        self.logger.info('Prepared all Indexes.')
         processPoolObj = processPool(self.numThreads)
         retVals = processPoolObj.runParallelWithPool(manageDuplicateRows, uniqueTables, self.logger)
         # for table in uniqueTables:
@@ -926,11 +927,11 @@ def manageDuplicateRows(table):
             # print('Indexes Populated')
             return True
         except OperationalError:
-            if tryCounter < 10000:
+            if tryCounter < 3:
                 print('No DB Connection available.. Will try again..')
                 time.sleep(0.01)
                 tryCounter += 1
-                continue
+                pass
             else:
                 print('DB connection error.I quit.')
                 break
