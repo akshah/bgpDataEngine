@@ -1029,7 +1029,7 @@ def loadWorkerForProcessPool(fn):
                     tryCounter += 1
                 else:
                     print('DB connection error. Escaping.',flush=True)
-                    return
+                    return []
             except:
                 traceback.print_exc()
 
@@ -1103,7 +1103,7 @@ def loadWorkerForProcessPool(fn):
                         # Can give dupicate entry error, ignore
                         # traceback.print_exc()
                         # exit(0)
-                        continue
+                        pass
             dblocal.close()
 
         def localPopulatePeerDayTable(table):
@@ -1214,7 +1214,7 @@ def loadWorkerForProcessPool(fn):
                 except:
                     # traceback.print_exc()
                     # raise Exception('Create table failed!')
-                    self.logger.warn('Table ' + table + ' creation did not go well.')
+                    #self.logger.warn('Table ' + table + ' creation did not go well.')
                     # exit(1)
                     return False
 
@@ -1226,7 +1226,8 @@ def loadWorkerForProcessPool(fn):
             lines = subprocess.check_output(["bgpdump", "-m", fn], universal_newlines=True)
         except:
             # self.logger.warn('BGP file '+fn+' could not be read properly. Skipping it.')
-            return
+            print('BGP file could not be read properly',flush=True)
+            return []
 
         # self.logger.info('Reading entries for '+fn)
         # print('Looping through lines')
@@ -1349,8 +1350,9 @@ def loadWorkerForProcessPool(fn):
         if tableList:
             return tableList  # Tables that were updated
         else:
-            return
+            return []
 
     except:
         traceback.print_exc()
-    return
+    print('Returning Empty List 1',flush=True)
+    return []
