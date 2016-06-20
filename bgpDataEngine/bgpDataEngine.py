@@ -1344,8 +1344,9 @@ def loadWorkerForProcessPool(fn):
                     for v in rline:
                         datatmp.append(v)
                     data.append(datatmp)
+                print('{0} loading data..'.format(poolWorkerName),flush=True)
                 localPushData(table, data)
-
+                print('{0} finished loading data.'.format(poolWorkerName),flush=True)
         tableList = list(toPushData.keys())
         if tableList:
             return tableList  # Tables that were updated
