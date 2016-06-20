@@ -940,418 +940,417 @@ def manageDuplicateRows(table):
 def loadWorkerForProcessPool(fn):
     tryCounter = 0
     poolWorkerName = current_process().name
-    while True:
-        try:
-            # print('Got '+fn)
-            config = configparser.ConfigParser()
-            config.read('./conf/bgpDataEngine.conf')
-            config.sections()
-            tableDirPath = config['DEFAULTDIRS']['tableDir']
-            peer_list = []
-            new_peer_list = []
+    try:
+        # print('Got '+fn)
+        config = configparser.ConfigParser()
+        config.read('./conf/bgpDataEngine.conf')
+        config.sections()
+        tableDirPath = config['DEFAULTDIRS']['tableDir']
+        peer_list = []
+        new_peer_list = []
 
-            def localwriteToFile():
-                for tableName in toPushData.keys():
-                    try:
-                        resultfile = open(tableDirPath + tableName + '.' + poolWorkerName, 'a')
-                        for strg in toPushData[tableName]:
-                            print(strg, file=resultfile)
-                    except Exception as e:
-                        print(e)
-
-                    finally:
-                        resultfile.close()
-
-            def simplfyPath(all_ASes):
-                prev = ''
-                clean_aspath = []
-                for AS in all_ASes:
-                    if AS != prev:
-                        prev = AS
-                        clean_aspath.append(AS)
-                return clean_aspath
-
-            def localPushData(table, data):
+        def localwriteToFile():
+            for tableName in toPushData.keys():
                 try:
-                    dblocal = pymysql.connect(host=config['MySQL']['serverIP'],
-                                              port=int(config['MySQL']['serverPort']),
-                                              user=config['MySQL']['user'],
-                                              passwd=config['MySQL']['password'],
-                                              db=config['MySQL']['dbname'])
-                    with closing(dblocal.cursor()) as cur:
+                    resultfile = open(tableDirPath + tableName + '.' + poolWorkerName, 'a')
+                    for strg in toPushData[tableName]:
+                        print(strg, file=resultfile)
+                except Exception as e:
+                    print(e)
 
-                        try:
-                            fileName=tableDirPath+table+"."+poolWorkerName
-                            query='load data local infile \''+fileName+'\' into table '+table+' fields terminated by \'|\' lines terminated by \'\n\' \
-                            (BGPVersion,MsgTime,MsgType,PeerAS,PeerIP,PrefixOriginAS,PrefixIP,PrefixMask,ASPath,ASPathLength,ASPathLengthSimple,Origin,NextHop,LocalPref,Med,Community,AggregateID,AggregateIP,MsgHash) SET ID = NULL;'
-                            #print('Pushed '+table)
-                            cur.execute(query)
-                            dblocal.commit()
-                            print('Loaded '+fileName+' to DB',flush=True)
-                            os.remove(fileName)
-                        except:
-                            traceback.print_exc()
+                finally:
+                    resultfile.close()
 
-                        ##query = "insert ignore into {0} (id,BGPVersion,MsgTime,MsgType,PeerAS,PeerIP,PrefixOriginAS,PrefixIP,PrefixMask,ASPath,ASPathLength,ASPathLengthSimple,Origin,NextHop,LocalPref,Med,Community,AggregateID,AggregateIP,MsgHash)".format(
-                        ##    table)
-                        ##try:
-                        ##    cur.executemany(
-                        ##        query + " values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", data)
-                        ##    dblocal.commit()
-                        ##except:
-                        ##    pass
+        def simplfyPath(all_ASes):
+            prev = ''
+            clean_aspath = []
+            for AS in all_ASes:
+                if AS != prev:
+                    prev = AS
+                    clean_aspath.append(AS)
+            return clean_aspath
 
-                            #    traceback.print_exc()
-                            # for l in data:
-                            #    try:
-                            #        cur.execute(query+" values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",l)
-                            #        dblocal.commit()
-                            #    except:
-                            # print(table,l)
-                            # raise Exception('Insert to table Failed!')
-                            #        continue
-                            # dblocal.commit()
-                            # try:
-                            #    query="ALTER TABLE {0} \
-                            #                ADD UNIQUE INDEX idx (MsgHash);".format(table)
-                            #    cur.execute(query)
-                            #    dblocal.commit()
-                            # except:
-                            #    pass
-                    dblocal.commit()
-                    dblocal.close()
+        def localPushData(table, data):
+            try:
+                dblocal = pymysql.connect(host=config['MySQL']['serverIP'],
+                                          port=int(config['MySQL']['serverPort']),
+                                          user=config['MySQL']['user'],
+                                          passwd=config['MySQL']['password'],
+                                          db=config['MySQL']['dbname'])
+                with closing(dblocal.cursor()) as cur:
 
-                except OperationalError as exp:
-                    raise exp
+                    try:
+                        fileName=tableDirPath+table+"."+poolWorkerName
+                        query='load data local infile \''+fileName+'\' into table '+table+' fields terminated by \'|\' lines terminated by \'\n\' \
+                        (BGPVersion,MsgTime,MsgType,PeerAS,PeerIP,PrefixOriginAS,PrefixIP,PrefixMask,ASPath,ASPathLength,ASPathLengthSimple,Origin,NextHop,LocalPref,Med,Community,AggregateID,AggregateIP,MsgHash) SET ID = NULL;'
+                        #print('Pushed '+table)
+                        cur.execute(query)
+                        dblocal.commit()
+                        print('Loaded '+fileName+' to DB',flush=True)
+                        os.remove(fileName)
+                    except:
+                        traceback.print_exc()
+
+                    ##query = "insert ignore into {0} (id,BGPVersion,MsgTime,MsgType,PeerAS,PeerIP,PrefixOriginAS,PrefixIP,PrefixMask,ASPath,ASPathLength,ASPathLengthSimple,Origin,NextHop,LocalPref,Med,Community,AggregateID,AggregateIP,MsgHash)".format(
+                    ##    table)
+                    ##try:
+                    ##    cur.executemany(
+                    ##        query + " values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", data)
+                    ##    dblocal.commit()
+                    ##except:
+                    ##    pass
+
+                        #    traceback.print_exc()
+                        # for l in data:
+                        #    try:
+                        #        cur.execute(query+" values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",l)
+                        #        dblocal.commit()
+                        #    except:
+                        # print(table,l)
+                        # raise Exception('Insert to table Failed!')
+                        #        continue
+                        # dblocal.commit()
+                        # try:
+                        #    query="ALTER TABLE {0} \
+                        #                ADD UNIQUE INDEX idx (MsgHash);".format(table)
+                        #    cur.execute(query)
+                        #    dblocal.commit()
+                        # except:
+                        #    pass
+                dblocal.commit()
+                dblocal.close()
+
+            except OperationalError as exp:
+                if tryCounter < 5:
+                    # self.logger.error('No DB Connection available.. Will try again..')
+                    print('DB connection error. Will try again..',flush=True)
+                    time.sleep(1)
+                    localPushData(table, data)
+                    tryCounter += 1
+                else:
+                    print('DB connection error. Escaping.',flush=True)
+                    return
+            except:
+                traceback.print_exc()
+
+        def localGetTableName(BGPVersion, MsgTime, PeerIP):
+            peerU = PeerIP.replace('.', '_')
+            peerU = peerU.replace(':', '_')  # For v6 peers
+            day = time.strftime('%Y%m%d', time.gmtime(int(MsgTime)))
+            if BGPVersion.startswith("BGP"):
+                btype = 'updates'
+            elif BGPVersion.startswith('TABLE'):
+                btype = 'ribs'
+            else:
+                return False  # Something funky happened
+            table = btype + '_d' + day + '_p' + peerU
+            return table
+
+        def localcheckIfTableExists(table):
+            dblocal = pymysql.connect(host=config['MySQL']['serverIP'],
+                                      port=int(config['MySQL']['serverPort']),
+                                      user=config['MySQL']['user'],
+                                      passwd=config['MySQL']['password'],
+                                      db=config['MySQL']['dbname'])
+            with closing(dblocal.cursor()) as cur:
+                try:
+                    # cur.execute("SHOW TABLES LIKE \'%s\';",table)
+                    query = "SHOW TABLES LIKE \'{0}\';".format(table)
+                    cur.execute(query)
+                    retval = cur.fetchone()
                 except:
-                    traceback.print_exc()
+                    raise Exception('Show tables failed')
+            dblocal.close()
+            if retval:
+                # print('Table '+table+' does not exists')
+                return True
+            else:
+                # print('Table '+table+' does not exists')
+                return False
 
-            def localGetTableName(BGPVersion, MsgTime, PeerIP):
-                peerU = PeerIP.replace('.', '_')
-                peerU = peerU.replace(':', '_')  # For v6 peers
-                day = time.strftime('%Y%m%d', time.gmtime(int(MsgTime)))
-                if BGPVersion.startswith("BGP"):
-                    btype = 'updates'
-                elif BGPVersion.startswith('TABLE'):
-                    btype = 'ribs'
-                else:
-                    return False  # Something funky happened
-                table = btype + '_d' + day + '_p' + peerU
-                return table
-
-            def localcheckIfTableExists(table):
-                dblocal = pymysql.connect(host=config['MySQL']['serverIP'],
-                                          port=int(config['MySQL']['serverPort']),
-                                          user=config['MySQL']['user'],
-                                          passwd=config['MySQL']['password'],
-                                          db=config['MySQL']['dbname'])
-                with closing(dblocal.cursor()) as cur:
-                    try:
-                        # cur.execute("SHOW TABLES LIKE \'%s\';",table)
-                        query = "SHOW TABLES LIKE \'{0}\';".format(table)
-                        cur.execute(query)
-                        retval = cur.fetchone()
-                    except:
-                        raise Exception('Show tables failed')
-                dblocal.close()
-                if retval:
-                    # print('Table '+table+' does not exists')
-                    return True
-                else:
-                    # print('Table '+table+' does not exists')
-                    return False
-
-            def localpopulatePeerList():
-                dblocal = pymysql.connect(host=config['MySQL']['serverIP'],
-                                          port=int(config['MySQL']['serverPort']),
-                                          user=config['MySQL']['user'],
-                                          passwd=config['MySQL']['password'],
-                                          db=config['MySQL']['dbname'])
-                with closing(dblocal.cursor()) as cur:
-                    try:
-                        query = "select PeerIP from peer_list;"
-                        cur.execute(query)
+        def localpopulatePeerList():
+            dblocal = pymysql.connect(host=config['MySQL']['serverIP'],
+                                      port=int(config['MySQL']['serverPort']),
+                                      user=config['MySQL']['user'],
+                                      passwd=config['MySQL']['password'],
+                                      db=config['MySQL']['dbname'])
+            with closing(dblocal.cursor()) as cur:
+                try:
+                    query = "select PeerIP from peer_list;"
+                    cur.execute(query)
+                    row = cur.fetchone()
+                    while row is not None:
+                        if row not in peer_list:
+                            peer_list.append(row)
                         row = cur.fetchone()
-                        while row is not None:
-                            if row not in peer_list:
-                                peer_list.append(row)
-                            row = cur.fetchone()
-                    except:
-                        raise Exception('Select to table Failed!')
-                dblocal.close()
+                except:
+                    raise Exception('Select to table Failed!')
+            dblocal.close()
 
-            def localpushPeerIP():
-                dblocal = pymysql.connect(host=config['MySQL']['serverIP'],
-                                          port=int(config['MySQL']['serverPort']),
-                                          user=config['MySQL']['user'],
-                                          passwd=config['MySQL']['password'],
-                                          db=config['MySQL']['dbname'])
-                with closing(dblocal.cursor()) as cur:
-                    for PeerIP in new_peer_list:
-                        try:
-                            query = "insert into peer_list (PeerIP) values (\'{0}\');".format(PeerIP)
-                            cur.execute(query)
-                            dblocal.commit()
-                        except:
-                            # Can give dupicate entry error, ignore
-                            # traceback.print_exc()
-                            # exit(0)
-                            continue
-                dblocal.close()
-
-            def localPopulatePeerDayTable(table):
-                Tabletype = table.split('_d')[0]
-                peer = table.split('_p')[1].replace('_', '.')
-                day = table.split('_d')[1].split('_p')[0]
-                isPresent = False
-                dblocal = pymysql.connect(host=config['MySQL']['serverIP'],
-                                          port=int(config['MySQL']['serverPort']),
-                                          user=config['MySQL']['user'],
-                                          passwd=config['MySQL']['password'],
-                                          db=config['MySQL']['dbname'])
-                with closing(dblocal.cursor()) as cur:
+        def localpushPeerIP():
+            dblocal = pymysql.connect(host=config['MySQL']['serverIP'],
+                                      port=int(config['MySQL']['serverPort']),
+                                      user=config['MySQL']['user'],
+                                      passwd=config['MySQL']['password'],
+                                      db=config['MySQL']['dbname'])
+            with closing(dblocal.cursor()) as cur:
+                for PeerIP in new_peer_list:
                     try:
-                        query = "select * from peer_day where PeerIP = \'{0}\' and Day = \'{1}\';".format(peer, day)
+                        query = "insert into peer_list (PeerIP) values (\'{0}\');".format(PeerIP)
                         cur.execute(query)
-                        row = cur.fetchone()
-                        if row:
-                            isPresent = True
+                        dblocal.commit()
                     except:
-                        raise Exception('Select to peer_day table Failed!')
+                        # Can give dupicate entry error, ignore
+                        # traceback.print_exc()
+                        # exit(0)
+                        continue
+            dblocal.close()
 
-                if isPresent:
-                    # print('Row is present')
-                    if Tabletype == 'updates':
-                        Ttype = 'Updates'
-                    else:
-                        Ttype = 'Ribs'
-                    with closing(dblocal.cursor()) as cur:
-                        try:
-                            query = "UPDATE peer_day SET {0}=1 WHERE PeerIP=\'{1}\' and Day=\'{2}\';".format(Ttype,
-                                                                                                             peer, day)
-                            cur.execute(query)
-                            dblocal.commit()
-                        except:
-                            # Some other thread must have already created it
-                            dblocal.close()
+        def localPopulatePeerDayTable(table):
+            Tabletype = table.split('_d')[0]
+            peer = table.split('_p')[1].replace('_', '.')
+            day = table.split('_d')[1].split('_p')[0]
+            isPresent = False
+            dblocal = pymysql.connect(host=config['MySQL']['serverIP'],
+                                      port=int(config['MySQL']['serverPort']),
+                                      user=config['MySQL']['user'],
+                                      passwd=config['MySQL']['password'],
+                                      db=config['MySQL']['dbname'])
+            with closing(dblocal.cursor()) as cur:
+                try:
+                    query = "select * from peer_day where PeerIP = \'{0}\' and Day = \'{1}\';".format(peer, day)
+                    cur.execute(query)
+                    row = cur.fetchone()
+                    if row:
+                        isPresent = True
+                except:
+                    raise Exception('Select to peer_day table Failed!')
+
+            if isPresent:
+                # print('Row is present')
+                if Tabletype == 'updates':
+                    Ttype = 'Updates'
                 else:
-                    # print('Row is not present')
-                    with closing(dblocal.cursor()) as cur:
-                        # print('Table type: '+Tabletype)
-                        try:
-                            if Tabletype == 'updates':
-                                # print('Table type: '+Tabletype)
-                                query = "insert into peer_day (PeerIP,Day,Updates,Ribs) values (\'{0}\',\'{1}\',\'{2}\',\'{3}\');".format(
-                                    peer, day, 1, 0)
-                                # print('inserted for updates table')
-                            else:
-                                query = "insert into peer_day (PeerIP,Day,Updates,Ribs) values (\'{0}\',\'{1}\',\'{2}\',\'{3}\');".format(
-                                    peer, day, 0, 1)
-
-                            cur.execute(query)
-                            dblocal.commit()
-                        except:
-                            print('Update Error for peer_day!!')
-                            traceback.print_exc()
-                            exit(1)
-
-                dblocal.close()
-
-            def localcreateTable(table):
-                dblocal = pymysql.connect(host=config['MySQL']['serverIP'],
-                                          port=int(config['MySQL']['serverPort']),
-                                          user=config['MySQL']['user'],
-                                          passwd=config['MySQL']['password'],
-                                          db=config['MySQL']['dbname'])
+                    Ttype = 'Ribs'
                 with closing(dblocal.cursor()) as cur:
                     try:
-                        if table.startswith('updates') or table.startswith('ribs'):
-                            query = "CREATE TABLE IF NOT EXISTS {0} ( \
-                                        ID BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,\
-                                        BGPVersion VARCHAR(20) NOT NULL,\
-                                        MsgTime INT UNSIGNED NOT NULL,\
-                                        MsgType VARCHAR(1) NOT NULL,\
-                                        PeerAS INT UNSIGNED NOT NULL,\
-                                        PeerIP VARCHAR(255) NOT NULL,\
-                                        PrefixOriginAS INT UNSIGNED,\
-                                        PrefixIP VARCHAR(255) NOT NULL,\
-                                        PrefixMask INT UNSIGNED NOT NULL,\
-                                        ASPath VARCHAR(999),\
-                                        ASPathLength INT UNSIGNED,\
-                                        ASPathLengthSimple INT UNSIGNED,\
-                                        Origin VARCHAR(20),\
-                                        NextHop VARCHAR(255) NOT NULL,\
-                                        LocalPref INT UNSIGNED,\
-                                        Med INT UNSIGNED,\
-                                        Community VARCHAR(255),\
-                                        AggregateID VARCHAR(255),\
-                                        AggregateIP VARCHAR(255),  \
-                                        MsgHash VARCHAR(255),  \
-                                        INDEX msgTimeIndex (MsgTime),\
-                                        INDEX prefixIPIndex (PrefixIP), \
-                                        PRIMARY KEY (ID));".format(table)
+                        query = "UPDATE peer_day SET {0}=1 WHERE PeerIP=\'{1}\' and Day=\'{2}\';".format(Ttype,
+                                                                                                         peer, day)
+                        cur.execute(query)
+                        dblocal.commit()
+                    except:
+                        # Some other thread must have already created it
+                        dblocal.close()
+            else:
+                # print('Row is not present')
+                with closing(dblocal.cursor()) as cur:
+                    # print('Table type: '+Tabletype)
+                    try:
+                        if Tabletype == 'updates':
+                            # print('Table type: '+Tabletype)
+                            query = "insert into peer_day (PeerIP,Day,Updates,Ribs) values (\'{0}\',\'{1}\',\'{2}\',\'{3}\');".format(
+                                peer, day, 1, 0)
+                            # print('inserted for updates table')
                         else:
-                            return False  # Something does not look right with table name
+                            query = "insert into peer_day (PeerIP,Day,Updates,Ribs) values (\'{0}\',\'{1}\',\'{2}\',\'{3}\');".format(
+                                peer, day, 0, 1)
 
                         cur.execute(query)
                         dblocal.commit()
-                        # query="ALTER TABLE {0} \
-                        #        ADD UNIQUE INDEX idx (MsgHash);".format(table)
-                        # cur.execute(query)
-                        # dblocal.commit()
-                        # self.logger.info('Created '+table+' table.')
-                        # print('Created '+table+' table.')
-                        dblocal.close()
-                        localPopulatePeerDayTable(table)
-                        return True
                     except:
-                        # traceback.print_exc()
-                        # raise Exception('Create table failed!')
-                        self.logger.warn('Table ' + table + ' creation did not go well.')
-                        # exit(1)
-                        return False
+                        print('Update Error for peer_day!!')
+                        traceback.print_exc()
+                        exit(1)
 
-            toPushData = {}
-            lines = []
-            localpopulatePeerList()
+            dblocal.close()
 
-            try:
-                lines = subprocess.check_output(["bgpdump", "-m", fn], universal_newlines=True)
-            except:
-                # self.logger.warn('BGP file '+fn+' could not be read properly. Skipping it.')
-                return
-
-            # self.logger.info('Reading entries for '+fn)
-            # print('Looping through lines')
-            counter = 0
-            for line in lines.split("\n"):
-                line.rstrip('\n')
-                if line.startswith("BGP") or line.startswith('TABLE'):  # Eliminate possibility of empty rows
-                    pieces = line.split('|')
-                    # print(pieces)
-                    (BGPVersion, MsgTime, MsgType, PeerIP, PeerAS, PrefixCom, ASPath, Origin, NextHop, LocalPref, Med,
-                     Community, AggregateID, AggregateIP) = [""] * 14
-                    if len(pieces) == 15:
-                        (BGPVersion, MsgTime, MsgType, PeerIP, PeerAS, PrefixCom, ASPath, Origin, NextHop, LocalPref,
-                         Med, Community, AggregateID, AggregateIP, _) = pieces
+        def localcreateTable(table):
+            dblocal = pymysql.connect(host=config['MySQL']['serverIP'],
+                                      port=int(config['MySQL']['serverPort']),
+                                      user=config['MySQL']['user'],
+                                      passwd=config['MySQL']['password'],
+                                      db=config['MySQL']['dbname'])
+            with closing(dblocal.cursor()) as cur:
+                try:
+                    if table.startswith('updates') or table.startswith('ribs'):
+                        query = "CREATE TABLE IF NOT EXISTS {0} ( \
+                                    ID BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,\
+                                    BGPVersion VARCHAR(20) NOT NULL,\
+                                    MsgTime INT UNSIGNED NOT NULL,\
+                                    MsgType VARCHAR(1) NOT NULL,\
+                                    PeerAS INT UNSIGNED NOT NULL,\
+                                    PeerIP VARCHAR(255) NOT NULL,\
+                                    PrefixOriginAS INT UNSIGNED,\
+                                    PrefixIP VARCHAR(255) NOT NULL,\
+                                    PrefixMask INT UNSIGNED NOT NULL,\
+                                    ASPath VARCHAR(999),\
+                                    ASPathLength INT UNSIGNED,\
+                                    ASPathLengthSimple INT UNSIGNED,\
+                                    Origin VARCHAR(20),\
+                                    NextHop VARCHAR(255) NOT NULL,\
+                                    LocalPref INT UNSIGNED,\
+                                    Med INT UNSIGNED,\
+                                    Community VARCHAR(255),\
+                                    AggregateID VARCHAR(255),\
+                                    AggregateIP VARCHAR(255),  \
+                                    MsgHash VARCHAR(255),  \
+                                    INDEX msgTimeIndex (MsgTime),\
+                                    INDEX prefixIPIndex (PrefixIP), \
+                                    PRIMARY KEY (ID));".format(table)
                     else:
-                        (BGPVersion, MsgTime, MsgType, PeerIP, PeerAS, PrefixCom) = pieces
-                    PrefixFields = PrefixCom.split('/')
-                    PrefixIP = PrefixFields[0]
-                    PrefixMask = PrefixFields[1]
+                        return False  # Something does not look right with table name
 
-                    # Check if valid Peer
-                    v4PeerFlag = False
-                    v6PeerFlag = False
+                    cur.execute(query)
+                    dblocal.commit()
+                    # query="ALTER TABLE {0} \
+                    #        ADD UNIQUE INDEX idx (MsgHash);".format(table)
+                    # cur.execute(query)
+                    # dblocal.commit()
+                    # self.logger.info('Created '+table+' table.')
+                    # print('Created '+table+' table.')
+                    dblocal.close()
+                    localPopulatePeerDayTable(table)
+                    return True
+                except:
+                    # traceback.print_exc()
+                    # raise Exception('Create table failed!')
+                    self.logger.warn('Table ' + table + ' creation did not go well.')
+                    # exit(1)
+                    return False
+
+        toPushData = {}
+        lines = []
+        localpopulatePeerList()
+
+        try:
+            lines = subprocess.check_output(["bgpdump", "-m", fn], universal_newlines=True)
+        except:
+            # self.logger.warn('BGP file '+fn+' could not be read properly. Skipping it.')
+            return
+
+        # self.logger.info('Reading entries for '+fn)
+        # print('Looping through lines')
+        counter = 0
+        for line in lines.split("\n"):
+            line.rstrip('\n')
+            if line.startswith("BGP") or line.startswith('TABLE'):  # Eliminate possibility of empty rows
+                pieces = line.split('|')
+                # print(pieces)
+                (BGPVersion, MsgTime, MsgType, PeerIP, PeerAS, PrefixCom, ASPath, Origin, NextHop, LocalPref, Med,
+                 Community, AggregateID, AggregateIP) = [""] * 14
+                if len(pieces) == 15:
+                    (BGPVersion, MsgTime, MsgType, PeerIP, PeerAS, PrefixCom, ASPath, Origin, NextHop, LocalPref,
+                     Med, Community, AggregateID, AggregateIP, _) = pieces
+                else:
+                    (BGPVersion, MsgTime, MsgType, PeerIP, PeerAS, PrefixCom) = pieces
+                PrefixFields = PrefixCom.split('/')
+                PrefixIP = PrefixFields[0]
+                PrefixMask = PrefixFields[1]
+
+                # Check if valid Peer
+                v4PeerFlag = False
+                v6PeerFlag = False
+                try:
+                    if ipaddress.IPv4Address(PeerIP):
+                        v4PeerFlag = True  # Valid v4 peer
+                except:
                     try:
-                        if ipaddress.IPv4Address(PeerIP):
-                            v4PeerFlag = True  # Valid v4 peer
+                        if ipaddress.IPv6Address(PeerIP):
+                            v6PeerFlag = True  # Valid v6 peer and prefix
                     except:
-                        try:
-                            if ipaddress.IPv6Address(PeerIP):
-                                v6PeerFlag = True  # Valid v6 peer and prefix
-                        except:
-                            print("Saw invalid peer IP: " + PeerIP)
+                        print("Saw invalid peer IP: " + PeerIP)
 
-                    if not v4PeerFlag and not v6PeerFlag:
-                        continue  # No valid peer
+                if not v4PeerFlag and not v6PeerFlag:
+                    continue  # No valid peer
 
-                    # Check if valid Prefix
-                    v4PrefixFlag = False
-                    v6PrefixFlag = False
+                # Check if valid Prefix
+                v4PrefixFlag = False
+                v6PrefixFlag = False
+                try:
+                    if ipaddress.IPv4Network(PrefixIP):
+                        v4PrefixFlag = True  # Valid v4 prefix
+                except:
                     try:
-                        if ipaddress.IPv4Network(PrefixIP):
-                            v4PrefixFlag = True  # Valid v4 prefix
+                        if ipaddress.IPv6Network(PrefixIP):
+                            v6PrefixFlag = True  # Valid v6 prefix
                     except:
-                        try:
-                            if ipaddress.IPv6Network(PrefixIP):
-                                v6PrefixFlag = True  # Valid v6 prefix
-                        except:
-                            print("Saw invalid prefix: " + PrefixIP + '/' + PrefixMask)
+                        print("Saw invalid prefix: " + PrefixIP + '/' + PrefixMask)
 
-                    if not v4PrefixFlag and not v6PrefixFlag:
-                        continue  # No valid prefix
+                if not v4PrefixFlag and not v6PrefixFlag:
+                    continue  # No valid prefix
 
-                    # intPrefixIP=int(netaddr.IPAddress(PrefixIP))
-                    # Not keep IPs as ints is a concious choice because of bad int16 supports
-                    # Plus MySQL 5.5 has not inet6
+                # intPrefixIP=int(netaddr.IPAddress(PrefixIP))
+                # Not keep IPs as ints is a concious choice because of bad int16 supports
+                # Plus MySQL 5.5 has not inet6
 
-                    if v6PeerFlag:
-                        PeerIP = ipaddress.IPv6Address(PeerIP).exploded  # Full representation
-                    if v6PrefixFlag:
-                        PrefixIP = ipaddress.IPv6Address(PrefixIP).exploded  # Full representation
+                if v6PeerFlag:
+                    PeerIP = ipaddress.IPv6Address(PeerIP).exploded  # Full representation
+                if v6PrefixFlag:
+                    PrefixIP = ipaddress.IPv6Address(PrefixIP).exploded  # Full representation
 
-                    if PeerIP not in peer_list:
-                        if PeerIP not in new_peer_list:
-                            new_peer_list.append(PeerIP)
+                if PeerIP not in peer_list:
+                    if PeerIP not in new_peer_list:
+                        new_peer_list.append(PeerIP)
 
-                    ASPathList = ASPath.split(' ')
-                    lenASPath = len(ASPathList)
-                    if ASPath == "":
-                        lenASPath = ""
-                        lenASPathClean = ""
-                        PrefixOriginAS = ""
-                    else:
-                        lenASPathClean = len(simplfyPath(ASPathList))
-                        PrefixOriginAS = ASPathList[lenASPath - 1]
+                ASPathList = ASPath.split(' ')
+                lenASPath = len(ASPathList)
+                if ASPath == "":
+                    lenASPath = ""
+                    lenASPathClean = ""
+                    PrefixOriginAS = ""
+                else:
+                    lenASPathClean = len(simplfyPath(ASPathList))
+                    PrefixOriginAS = ASPathList[lenASPath - 1]
 
-                    tableName = localGetTableName(BGPVersion, MsgTime, PeerIP)
-                    if not tableName:
-                        continue  # Skip this message
+                tableName = localGetTableName(BGPVersion, MsgTime, PeerIP)
+                if not tableName:
+                    continue  # Skip this message
 
-                    if tableName not in toPushData.keys():
-                        toPushData[tableName] = []
+                if tableName not in toPushData.keys():
+                    toPushData[tableName] = []
 
-                    # str(counter)+'|'+
-                    strg = BGPVersion + '|' + MsgTime + '|' + MsgType + '|' + str(PeerAS) + '|' + str(
-                        PeerIP) + '|' + str(PrefixOriginAS) + '|' + str(PrefixIP) + '|' + str(
-                        PrefixMask) + '|' + ASPath + '|' + str(lenASPath) + '|' + str(
-                        lenASPathClean) + '|' + Origin + '|' + str(NextHop) + '|' + str(LocalPref) + '|' + str(
-                        Med) + '|' + Community + '|' + AggregateID + '|' + AggregateIP
-                    MsgHash = hashlib.md5(strg.encode('utf-8')).hexdigest()
-                    strg = strg + '|' + MsgHash
-                    toPushData[tableName].append(strg)
-                    counter += 1
+                # str(counter)+'|'+
+                strg = BGPVersion + '|' + MsgTime + '|' + MsgType + '|' + str(PeerAS) + '|' + str(
+                    PeerIP) + '|' + str(PrefixOriginAS) + '|' + str(PrefixIP) + '|' + str(
+                    PrefixMask) + '|' + ASPath + '|' + str(lenASPath) + '|' + str(
+                    lenASPathClean) + '|' + Origin + '|' + str(NextHop) + '|' + str(LocalPref) + '|' + str(
+                    Med) + '|' + Community + '|' + AggregateID + '|' + AggregateIP
+                MsgHash = hashlib.md5(strg.encode('utf-8')).hexdigest()
+                strg = strg + '|' + MsgHash
+                toPushData[tableName].append(strg)
+                counter += 1
 
-            localpushPeerIP()
-            # Create required tables
-            for tableName in toPushData.keys():
-                if not localcheckIfTableExists(tableName):
-                    # Table does not exist. Create it.
-                    if not localcreateTable(tableName):
-                        # print('There was create table error for '+tableName)
-                        continue  # No table was created will skip
+        localpushPeerIP()
+        # Create required tables
+        for tableName in toPushData.keys():
+            if not localcheckIfTableExists(tableName):
+                # Table does not exist. Create it.
+                if not localcreateTable(tableName):
+                    # print('There was create table error for '+tableName)
+                    continue  # No table was created will skip
 
-            # Write to local files
-            localwriteToFile()
-            pushToDB = True
-            # Push to DB
-            if pushToDB:
-                for table in toPushData.keys():
-                    data = []
-                    for line in toPushData[table]:
-                        rline = line.split('|')
-                        datatmp = []
-                        datatmp.append('None')
-                        for v in rline:
-                            datatmp.append(v)
-                        data.append(datatmp)
-                    localPushData(table, data)
+        # Write to local files
+        localwriteToFile()
+        pushToDB = True
+        # Push to DB
+        if pushToDB:
+            for table in toPushData.keys():
+                data = []
+                for line in toPushData[table]:
+                    rline = line.split('|')
+                    datatmp = []
+                    datatmp.append('None')
+                    for v in rline:
+                        datatmp.append(v)
+                    data.append(datatmp)
+                localPushData(table, data)
 
-            tableList = list(toPushData.keys())
-            if tableList:
-                return tableList  # Tables that were updated
-            else:
-                return
+        tableList = list(toPushData.keys())
+        if tableList:
+            return tableList  # Tables that were updated
+        else:
+            return
 
-        except OperationalError:
-            if tryCounter < 3:
-                # self.logger.error('No DB Connection available.. Will try again..')
-                print('DB connection error. Will try again..',flush=True)
-                time.sleep(0.001)
-                tryCounter += 1
-                pass
-            else:
-                print('DB connection error. Escaping.',flush=True)
-                break
-    return False
+    except:
+        traceback.print_exc()
+    return
