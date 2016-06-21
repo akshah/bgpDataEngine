@@ -976,8 +976,8 @@ def loadWorkerForProcessPool(fn):
                     clean_aspath.append(AS)
             return clean_aspath
 
-        def localPushData(table, data):
-            global tryCounter
+        def localPushData(table, data, tryCounter):
+            localtryCounter=tryCounter
             try:
                 dblocal = pymysql.connect(host=config['MySQL']['serverIP'],
                                           port=int(config['MySQL']['serverPort']),
@@ -1027,12 +1027,12 @@ def loadWorkerForProcessPool(fn):
                 dblocal.close()
 
             except OperationalError as exp:
-                if tryCounter < 5:
+                if localtryCounter < 5:
                     # self.logger.error('No DB Connection available.. Will try again..')
                     print('DB connection error. Will try again..',flush=True)
                     time.sleep(1)
-                    tryCounter += 1
-                    localPushData(table, data)
+                    localtryCounter += 1
+                    localPushData(table, data,localtryCounter)
                 else:
                     print('DB connection error. Escaping.',flush=True)
                     return
@@ -1351,7 +1351,7 @@ def loadWorkerForProcessPool(fn):
                         datatmp.append(v)
                     data.append(datatmp)
                 print('{0} loading data..'.format(poolWorkerName),flush=True)
-                localPushData(table, data)
+                localPushData(table, data,tryCounter)
                 print('{0} finished loading data.'.format(poolWorkerName),flush=True)
         tableList = list(toPushData.keys())
         if tableList:
