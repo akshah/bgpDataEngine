@@ -755,8 +755,14 @@ class bgpDataEngine(object):
                 print('There was create table error for peer_day.')
                 exit(1)
 
-        processPoolObj = processPool(self.numThreads)
-        updatedTables = processPoolObj.runParallelWithPool(loadWorkerForProcessPool, mrtFiles, self.logger)
+        #processPoolObj = processPool(self.numThreads)
+        #updatedTables = processPoolObj.runParallelWithPool(loadWorkerForProcessPool, mrtFiles, self.logger)
+        updatedTables=[]
+        for mrtFileName in mrtFiles:
+            tables=loadWorkerForProcessPool(mrtFileName)
+            for tb in tables:
+                updatedTables.append(tb)
+
         # Add and drop index to keep only unique rows
         uniqueTables = []
         for tl in updatedTables:
