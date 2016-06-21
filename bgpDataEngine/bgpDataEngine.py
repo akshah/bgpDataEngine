@@ -977,6 +977,7 @@ def loadWorkerForProcessPool(fn):
             return clean_aspath
 
         def localPushData(table, data):
+            global tryCounter
             try:
                 dblocal = pymysql.connect(host=config['MySQL']['serverIP'],
                                           port=int(config['MySQL']['serverPort']),
