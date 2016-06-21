@@ -761,6 +761,7 @@ class bgpDataEngine(object):
         for mrtFileName in mrtFiles:
             tables=loadWorkerForProcessPool(mrtFileName)
             for tb in tables:
+                print(tb)
                 updatedTables.append(tb)
 
         # Add and drop index to keep only unique rows
