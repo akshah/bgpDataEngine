@@ -971,6 +971,7 @@ def loadWorkerForProcessPool(fn):
             return clean_aspath
 
         def localPushData(table, data):
+            localtryCounter=1
             try:
                 dblocal = pymysql.connect(host=config['MySQL']['serverIP'],
                                           port=int(config['MySQL']['serverPort']),
@@ -993,12 +994,11 @@ def loadWorkerForProcessPool(fn):
 
                     query = "insert ignore into {0} (id,BGPVersion,MsgTime,MsgType,PeerAS,PeerIP,PrefixOriginAS,PrefixIP,PrefixMask,ASPath,ASPathLength,ASPathLengthSimple,Origin,NextHop,LocalPref,Med,Community,AggregateID,AggregateIP,MsgHash)".format(
                         table)
-                    try:
-                        cur.executemany(
-                            query + " values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", data)
-                        dblocal.commit()
-                    except:
-                        pass
+                    #try:
+                    cur.executemany(query + " values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", data)
+                    dblocal.commit()
+                    #except:
+                    #    pass
 
                         #    traceback.print_exc()
                         # for l in data:
@@ -1017,19 +1017,19 @@ def loadWorkerForProcessPool(fn):
                         #    dblocal.commit()
                         # except:
                         #    pass
-                dblocal.commit()
+                #dblocal.commit()
                 dblocal.close()
 
             except OperationalError as exp:
-                if tryCounter < 5:
+                if localtryCounter < 5:
                     # self.logger.error('No DB Connection available.. Will try again..')
                     print('DB connection error. Will try again..',flush=True)
                     time.sleep(1)
+                    localtryCounter += 1
                     localPushData(table, data)
-                    tryCounter += 1
                 else:
                     print('DB connection error. Escaping.',flush=True)
-                    return []
+                    return
             except:
                 traceback.print_exc()
 
