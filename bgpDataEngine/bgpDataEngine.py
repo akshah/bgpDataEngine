@@ -205,8 +205,8 @@ class bgpDataEngine(object):
             localrvcollectors=[]
             localripecollectors=[]
             for collc in collectors:
+                print(self.bgpmoncollectors)
                 if collc in self.bgpmoncollectors:
-                    print(self.bgpmoncollectors)
                     localbgpmoncollectors.append(collc)
                     accessToBGPMonArchive = True
                 elif collc in self.rvcollectors:
