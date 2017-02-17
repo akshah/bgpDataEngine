@@ -15,9 +15,9 @@ if __name__ == '__main__':
     #Fetch entire month
     #bde.getMonth('updates','2016','03',load2db=False,collectors=['route-views.jinx','rrc00','bgpmon'])
 
-    accessToBGPMonArchive = True
-    self.accessToRVArchive = False
-    self.accessToRipeArchive = False
+    bde.accessToBGPMonArchive = True
+    bde.accessToRVArchive = False
+    bde.accessToRipeArchive = False
 
     bde.getRange('updates','20140701','20140705',collectors=['routeviews-kixp'])
 
