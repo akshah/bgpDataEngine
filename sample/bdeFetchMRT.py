@@ -19,7 +19,7 @@ if __name__ == '__main__':
     bde.accessToRVArchive = False
     bde.accessToRipeArchive = False
 
-    bde.getRange('ribs','20140701','20140705',collectors=['routeviews-kixp'])
+    bde.getRange('ribs','20140701','20140705')
 
     end_time,_=currentTime()
     print('Finished processing in '+str(int((end_time-start_time)/60))+' minutes and '+str(int((end_time-start_time)%60))+' seconds.')
