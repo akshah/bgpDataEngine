@@ -74,9 +74,9 @@ class bgpDataEngine(object):
         except:
             self.logger.warn('DB connection not established. load2DB() may not work!.')
 
-        self.bgpmoncollectors = ['bgpmon','routeviews2', 'routeviews4', 'routeviews3', 'routeviews6', 'routeviews-eqix',
+        self.bgpmoncollectors = ['bgpmon','routeviews2', 'routeviews4', 'routeviews3', 'routeviews6', 'routeviews-eqix',\
                              'routeviews-isc', 'routeviews-kixp', 'routeviews-jinx' \
-            , 'routeviews-linx', 'routeviews-nwax', 'routeviews-telxatl', 'routeviews-wide', 'routeviews-sydney',
+            , 'routeviews-linx', 'routeviews-nwax', 'routeviews-telxatl', 'routeviews-wide', 'routeviews-sydney',\
                              'routeviews-saopaulo', 'routeviews-sg', \
                              'routeviews-perth', 'routeviews-sfmix', 'routeviews-soxrs']
 
