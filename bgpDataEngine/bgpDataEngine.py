@@ -74,18 +74,24 @@ class bgpDataEngine(object):
         except:
             self.logger.warn('DB connection not established. load2DB() may not work!.')
 
-        self.bgpmoncollectors = ['bgpmon']
+        self.bgpmoncollectors = ['bgpmon','routeviews2', 'routeviews4', 'routeviews3', 'routeviews6', 'routeviews-eqix',
+                             'routeviews-isc', 'routeviews-kixp', 'routeviews-jinx' \
+            , 'routeviews-linx', 'routeviews-nwax', 'routeviews-telxatl', 'routeviews-wide', 'routeviews-sydney',
+                             'routeviews-saopaulo', 'routeviews-sg', \
+                             'routeviews-perth', 'routeviews-sfmix', 'routeviews-soxrs']
+
         self.rvcollectors = ['route-views2', 'route-views4', 'route-views3', 'route-views6', 'route-views.eqix',
                              'route-views.isc', 'route-views.kixp', 'route-views.jinx' \
             , 'route-views.linx', 'route-views.nwax', 'route-views.telxatl', 'route-views.wide', 'route-views.sydney',
                              'route-views.saopaulo', 'route-views.sg', \
                              'route-views.perth', 'route-views.sfmix', 'route-views.soxrs']
+
         self.ripecollectors = ['rrc00', 'rrc01', 'rrc02', 'rrc03', 'rrc04', 'rrc05', 'rrc06', 'rrc07', 'rrc08', 'rrc09',
                                'rrc10', 'rrc11', 'rrc12', 'rrc13', 'rrc14', 'rrc15', 'rrc16']
 
         #Booleans to keep track of which archive we want to query.
         #If user does not specify anything, by default all will be used to pull data from.
-        self.accessToBGPMonArchive = True
+        self.accessToBGPMonArchive = False
         self.accessToRVArchive = True
         self.accessToRipeArchive = True
 
@@ -172,7 +178,7 @@ class bgpDataEngine(object):
             finally:
                 self.queueRV.task_done()
 
-    def getRange(self, datatype, start, end, load2db=True, collectors=[]):
+    def getRange(self, datatype, start, end, load2db=False, collectors=[]):
         self.dirpath = self.config['DEFAULTDIRS']['MRTDir']
         if os.path.exists(self.dirpath):
             self.logger.info('Using ' + self.dirpath + ' for downloading MRT Files')
